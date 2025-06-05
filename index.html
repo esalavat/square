@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Square</title>
+</head>
+
+<body>
+    <canvas id="game-canvas" width="400" height="300"></canvas>
+    <script>
+        const game = (() => {
+
+            function Square(x, y) {
+                this.x = x;
+                this.y = y;
+                return this;
+            }
+
+            Square.prototype.update = function() {
+                
+            }
+            
+            Square.prototype.render = function(ctx) {
+                console.log("Rendering x, y: ", this.x, this.y);
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, 20, 20);
+                ctx.stroke();
+            };
+
+            function createGrid() {
+                let grid = [];
+
+                const height = 20;
+                const width = 20;
+                const spacing = 5;
+
+                for(let i=0; i<10; i++) {
+                    for(let j=0; j<10; j++) {
+                        grid.push(new Square(spacing + (i * (width + spacing)), spacing + (j * (height + spacing))));
+                    }
+                }
+
+                return grid;
+            }
+
+            let game = {};
+
+            game.update = () => {
+                for (let object of game.objects) {
+                    object.update();
+                }
+            }
+            
+            game.render = () => {
+                game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
+                
+                for (let object of game.objects) {
+                    object.render(game.ctx);
+                }
+            }
+            
+            game.loop = () => {
+                window.requestAnimationFrame(game.loop);
+                game.render(game.ctx);
+            }
+            
+            game.init = () => {
+                
+                game.canvas = document.getElementById("game-canvas");
+                game.ctx = game.canvas.getContext("2d");
+                
+                game.objects = createGrid();
+
+                setInterval(game.update, 16);
+                game.loop();
+            }
+
+            return {
+                init: game.init
+            };
+        })();
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+            game.init();
+        });
+    </script>
+</body>
+
+</html>
