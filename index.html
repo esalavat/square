@@ -7,9 +7,11 @@
 
 <body>
     <canvas id="game-canvas" width="800" height="800"></canvas>
-    <script>
-        const game = (() => {
+    <script type="module">
+        import { Square } from './square.js';
+        import { Color } from './color.js';
 
+        const game = (() => {
             //Settings
             const squareHeight = 100;
             const squareWidth = 100;
@@ -17,35 +19,6 @@
 
             const squareAreaXOffset = 100;
             const squareAreaYOffset = 100;
-
-            //Classes
-            function Color(id, color, colorCode) {
-                this.id = id;
-                this.color = color;
-                this.colorCode = colorCode;
-            }
-
-            function Square(x, y, colorX, colorY, level) {
-                this.x = x;
-                this.y = y;
-                this.colorX = colorX;
-                this.colorY = colorY;
-                this.level = level;
-            }
-
-            Square.prototype.update = function () {
-
-            }
-
-            Square.prototype.render = function (ctx) {
-                //console.log("Rendering x, y: ", this.x, this.y);
-                ctx.beginPath();
-                ctx.rect(this.x, this.y, squareWidth, squareHeight);
-                ctx.stroke();
-
-                drawTriangleFilled(ctx, this.x, this.y, this.x + squareWidth, this.y, this.x + squareWidth, this.y + squareHeight, game.colors[this.colorX].colorCode);
-                drawTriangleFilled(ctx, this.x, this.y, this.x, this.y + squareHeight, this.x + squareWidth, this.y + squareHeight, game.colors[this.colorY].colorCode);
-            };
 
             //Utilities
             function drawTriangleFilled(ctx, x1, y1, x2, y2, x3, y3, color) {
@@ -55,11 +28,9 @@
                 ctx.lineTo(x3, y3);
                 ctx.fillStyle = color;
                 ctx.fill();
-
             }
 
             //Game
-
             function createGrid(width, height) {
                 let grid = [];
 
@@ -70,7 +41,9 @@
                             squareAreaYOffset + (j * (squareHeight + squareSpacing)),
                             i,
                             4 + j,
-                            0
+                            0,
+                            squareWidth,
+                            squareHeight
                         ));
                     }
                 }
@@ -92,7 +65,7 @@
                 game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
 
                 for (let object of game.objects) {
-                    object.render(game.ctx);
+                    object.render(game.ctx, game.colors, drawTriangleFilled);
                 }
 
                 for (let x = 0; x < 4; x++) {
@@ -116,7 +89,6 @@
             }
 
             game.init = () => {
-
                 game.canvas = document.getElementById("game-canvas");
                 game.ctx = game.canvas.getContext("2d");
 
