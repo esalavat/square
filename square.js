@@ -7,7 +7,11 @@ export class Square {
         this.level = level;
         this.width = width;
         this.height = height;
-        this.cost = Math.max(1, Math.pow(10, colorX) * Math.pow(10, colorY-4));
+        this.baseCost = Math.max(1, Math.pow(10, colorX) * Math.pow(10, colorY-4));
+    }
+
+    get cost() {
+        return this.baseCost * (this.level + 1);
     }
 
     update() {

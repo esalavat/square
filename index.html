@@ -159,6 +159,36 @@
                 
                 game.objects = createGrid(4, 4);
 
+                // Add click handler
+                game.canvas.addEventListener('click', (event) => {
+                    const rect = game.canvas.getBoundingClientRect();
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
+
+                    // Find clicked square
+                    for (let square of game.objects) {
+                        if (x >= square.x && x <= square.x + square.width &&
+                            y >= square.y && y <= square.y + square.height) {
+                            
+                            // Check if we can afford it
+                            if (game.colors[square.colorX].balance >= square.cost || 
+                                game.colors[square.colorY].balance >= square.cost) {
+                                
+                                // Deduct cost from the color with higher balance
+                                if (game.colors[square.colorX].balance >= game.colors[square.colorY].balance) {
+                                    game.colors[square.colorX].balance -= square.cost;
+                                } else {
+                                    game.colors[square.colorY].balance -= square.cost;
+                                }
+                                
+                                // Increase level
+                                square.level += 1;
+                            }
+                            break;
+                        }
+                    }
+                });
+
                 setInterval(game.update, 16);
                 game.loop();
             }
