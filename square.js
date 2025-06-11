@@ -18,7 +18,45 @@ export class Square {
         // Empty update method
     }
 
-    render(ctx, colors, drawTriangleFilled) {
+    isAdjacentToActive(squares) {
+        // Get grid position
+        const gridX = this.colorX;
+        const gridY = this.colorY - 4; // Adjust for the offset in colorY
+
+        // Check all adjacent squares
+        const adjacentPositions = [
+            {x: gridX - 1, y: gridY}, // left
+            {x: gridX + 1, y: gridY}, // right
+            {x: gridX, y: gridY - 1}, // up
+            {x: gridX, y: gridY + 1}  // down
+        ];
+
+        for (let pos of adjacentPositions) {
+            // Skip if out of bounds
+            if (pos.x < 0 || pos.x >= 4 || pos.y < 0 || pos.y >= 4) continue;
+
+            // Find the adjacent square
+            const adjacentSquare = squares.find(s => 
+                s.colorX === pos.x && s.colorY === pos.y + 4
+            );
+
+            if (adjacentSquare && adjacentSquare.level > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    shouldShow(squares) {
+        return this.level > 0 || this.isAdjacentToActive(squares);
+    }
+
+    render(ctx, colors, drawTriangleFilled, squares) {
+        if (!this.shouldShow(squares)) {
+            return; // Don't render if not active or adjacent to active
+        }
+
         // Check if we can afford this square
         const canAfford = colors[this.colorX].balance >= this.cost || colors[this.colorY].balance >= this.cost;
         

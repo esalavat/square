@@ -91,36 +91,49 @@
                 game.ctx.textAlign = 'center';
                 game.ctx.textBaseline = 'middle';
 
+                // Find which colors are associated with visible squares
+                const visibleColors = new Set();
+                for (let square of game.objects) {
+                    if (square.shouldShow(game.objects)) {
+                        visibleColors.add(square.colorX);
+                        visibleColors.add(square.colorY);
+                    }
+                }
+
                 // Render horizontal colors
                 for (let x = 0; x < 4; x++) {
-                    game.ctx.beginPath();
-                    game.ctx.rect((100+squareSpacing)*x+125, 25, 50, 50);
-                    game.ctx.fillStyle = game.colors[x].colorCode;
-                    game.ctx.fill();
-                    
-                    // Draw balance text
-                    game.ctx.fillStyle = '#000000';
-                    game.ctx.fillText(
-                        game.colors[x].balance,
-                        (100+squareSpacing)*x+150, // x + width/2
-                        50  // y + height/2
-                    );
+                    if (visibleColors.has(x)) {
+                        game.ctx.beginPath();
+                        game.ctx.rect((100+squareSpacing)*x+125, 25, 50, 50);
+                        game.ctx.fillStyle = game.colors[x].colorCode;
+                        game.ctx.fill();
+                        
+                        // Draw balance text
+                        game.ctx.fillStyle = '#000000';
+                        game.ctx.fillText(
+                            game.colors[x].balance,
+                            (100+squareSpacing)*x+150, // x + width/2
+                            50  // y + height/2
+                        );
+                    }
                 }
                 
                 // Render vertical colors
                 for (let y = 0; y < 4; y++) {
-                    game.ctx.beginPath();
-                    game.ctx.rect(25, (100+squareSpacing)*y+125, 50, 50);
-                    game.ctx.fillStyle = game.colors[4+y].colorCode;
-                    game.ctx.fill();
-                    
-                    // Draw balance text
-                    game.ctx.fillStyle = '#000000';
-                    game.ctx.fillText(
-                        game.colors[4+y].balance,
-                        50, // x + width/2
-                        (100+squareSpacing)*y+150  // y + height/2
-                    );
+                    if (visibleColors.has(y + 4)) {
+                        game.ctx.beginPath();
+                        game.ctx.rect(25, (100+squareSpacing)*y+125, 50, 50);
+                        game.ctx.fillStyle = game.colors[4+y].colorCode;
+                        game.ctx.fill();
+                        
+                        // Draw balance text
+                        game.ctx.fillStyle = '#000000';
+                        game.ctx.fillText(
+                            game.colors[4+y].balance,
+                            50, // x + width/2
+                            (100+squareSpacing)*y+150  // y + height/2
+                        );
+                    }
                 }
             }
             
@@ -128,7 +141,7 @@
                 game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
 
                 for (let object of game.objects) {
-                    object.render(game.ctx, game.colors, drawTriangleFilled);
+                    object.render(game.ctx, game.colors, drawTriangleFilled, game.objects);
                 }
 
                 renderColors();
