@@ -55,12 +55,75 @@
 
             let game = {};
 
+            function updateBalances() {
+                // Calculate new balances based on square levels
+                for (let square of game.objects) {
+                    if (square.level > 0) {
+                        console.log("Adding balance: ", square, game.colors);
+                        game.colors[square.colorX].balance += square.level;
+                        game.colors[square.colorY].balance += square.level;
+                    }
+                }
+            }
+            
+            let lastUpdateTime = Date.now();
+            let balanceUpdateTimer = 0;
             game.update = () => {
+                const currentTime = Date.now();
+                const deltaTime = currentTime - lastUpdateTime;
+                lastUpdateTime = currentTime;
+
+                balanceUpdateTimer += deltaTime;
+
+                if (balanceUpdateTimer > 1000) {
+                    updateBalances();
+                    balanceUpdateTimer = 0;
+                }
+
                 for (let object of game.objects) {
                     object.update();
                 }
             }
+            
+            function renderColors() {
+                // Set up text properties
+                game.ctx.font = '20px Arial';
+                game.ctx.textAlign = 'center';
+                game.ctx.textBaseline = 'middle';
 
+                // Render horizontal colors
+                for (let x = 0; x < 4; x++) {
+                    game.ctx.beginPath();
+                    game.ctx.rect((100+squareSpacing)*x+125, 25, 50, 50);
+                    game.ctx.fillStyle = game.colors[x].colorCode;
+                    game.ctx.fill();
+                    
+                    // Draw balance text
+                    game.ctx.fillStyle = '#000000';
+                    game.ctx.fillText(
+                        game.colors[x].balance,
+                        (100+squareSpacing)*x+150, // x + width/2
+                        50  // y + height/2
+                    );
+                }
+                
+                // Render vertical colors
+                for (let y = 0; y < 4; y++) {
+                    game.ctx.beginPath();
+                    game.ctx.rect(25, (100+squareSpacing)*y+125, 50, 50);
+                    game.ctx.fillStyle = game.colors[4+y].colorCode;
+                    game.ctx.fill();
+                    
+                    // Draw balance text
+                    game.ctx.fillStyle = '#000000';
+                    game.ctx.fillText(
+                        game.colors[4+y].balance,
+                        50, // x + width/2
+                        (100+squareSpacing)*y+150  // y + height/2
+                    );
+                }
+            }
+            
             game.render = () => {
                 game.ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
 
@@ -68,19 +131,7 @@
                     object.render(game.ctx, game.colors, drawTriangleFilled);
                 }
 
-                for (let x = 0; x < 4; x++) {
-                    game.ctx.beginPath();
-                    game.ctx.rect((100+squareSpacing)*x+125, 25, 50, 50);
-                    game.ctx.fillStyle = game.colors[x].colorCode;
-                    game.ctx.fill();
-                }
-                
-                for (let y = 0; y < 4; y++) {
-                    game.ctx.beginPath();
-                    game.ctx.rect(25, (100+squareSpacing)*y+125, 50, 50);
-                    game.ctx.fillStyle = game.colors[4+y].colorCode;
-                    game.ctx.fill();
-                }
+                renderColors();
             }
 
             game.loop = () => {
@@ -92,17 +143,20 @@
                 game.canvas = document.getElementById("game-canvas");
                 game.ctx = game.canvas.getContext("2d");
 
-                game.colors = {
-                    "0": new Color(0, "blue", "#6d9efc"),
-                    "1": new Color(1, "pink", "#f78ef0"),
-                    "2": new Color(2, "green", "#98f786"),
-                    "3": new Color(3, "Purple", "#937df8"),
-                    "4": new Color(4, "red", "#fb7b77"),
-                    "5": new Color(5, "light-blue", "#69EBFC"),
-                    "6": new Color(6, "orange", "#fdc170"),
-                    "7": new Color(7, "yellow", "#f3f87f")
-                };
+                // Create colors array instead of object
+                game.colors = [
+                    new Color(0, "blue", "#6d9efc", 0),
+                    new Color(1, "pink", "#f78ef0", 0),
+                    new Color(2, "green", "#98f786", 0),
+                    new Color(3, "Purple", "#937df8", 0),
+                    new Color(4, "red", "#fb7b77", 0),
+                    new Color(5, "light-blue", "#69EBFC", 0),
+                    new Color(6, "orange", "#fdc170", 0),
+                    new Color(7, "yellow", "#f3f87f", 0)
+                ];
 
+                console.log("Colors: ", game.colors);
+                
                 game.objects = createGrid(4, 4);
 
                 setInterval(game.update, 16);
