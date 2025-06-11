@@ -83,7 +83,7 @@ export class Square {
         drawTriangleFilled(ctx, this.x, this.y, this.x, this.y + this.height, this.x + this.width, this.y + this.height, colorYCode);
 
         // Draw cost
-        ctx.font = '16px Arial';
+        ctx.font = '25px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = this.level === 0 ? '#666666' : '#000000';
@@ -92,5 +92,18 @@ export class Square {
             this.x + this.width/2,
             this.y + this.height/2
         );
+
+        // Draw level in bottom right
+        if (this.level > 0) {
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.fillStyle = '#000000';
+            ctx.fillText(
+                '+' + this.level.toString(),
+                this.x + this.width - 5,
+                this.y + this.height - 5
+            );
+        }
     }
 } 
