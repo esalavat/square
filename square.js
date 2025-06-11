@@ -29,7 +29,7 @@ export class Square {
         if (canAfford) {
             // Highlight affordable unbought squares
             ctx.strokeStyle = '#00ff00';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 4;
         } else {
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = 1;
@@ -37,7 +37,7 @@ export class Square {
         ctx.stroke();
 
         // Draw the triangles with appropriate opacity
-        const opacity = this.level === 0 ? '70' : 'ff';
+        const opacity = this.level === 0 ? '50' : 'ff';
         const colorXCode = colors[this.colorX].colorCode + opacity;
         const colorYCode = colors[this.colorY].colorCode + opacity;
 
